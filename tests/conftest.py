@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # pylint: disable=protected-access,redefined-outer-name
 """Global fixtures for integration."""
 
@@ -23,7 +24,7 @@ from homeassistant.config_entries import SOURCE_IMPORT
 from homeassistant.const import CONF_DEVICES, CONF_NAME, CONF_SENSORS
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.narodmon import DOMAIN, NarodmonApiClient
+from custom_components.narodmon import CONF_SENSOR_TYPE, DOMAIN, NarodmonApiClient
 
 pytest_plugins = "pytest_homeassistant_custom_component"  # pylint: disable=invalid-name
 
@@ -90,8 +91,8 @@ def yaml_config_fixture():
                 {
                     CONF_NAME: "Test",
                     CONF_SENSORS: [
-                        "humidity",
-                        "pressure",
+                        {CONF_SENSOR_TYPE: "humidity"},
+                        {CONF_SENSOR_TYPE: "pressure"},
                     ],
                 }
             ],

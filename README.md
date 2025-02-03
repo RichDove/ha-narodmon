@@ -14,6 +14,9 @@
 
 _Component to integrate with Narodmon cloud and automatic search for the nearest sensors of the required type._
 
+> [!IMPORTANT]
+> Changes from [original implementation][component] are marked $${\color{red}=======}$$ below.
+
 ![NarodMon Logo](narodmon-logo.png)
 
 ## Known Limitations and Issues
@@ -53,16 +56,20 @@ _Component to integrate with Narodmon cloud and automatic search for the nearest
 
 ### Configuration Examples
 
+$${\color{red}======================================}$$
 ```yaml
 # Example configuration.yaml entry
 narodmon:
   devices:
     - name: "Narodmon"
       sensors:
-        - temperature
-        - humidity
-        - pressure
+        - type: temperature
+          id_regexp: "1234"
+          display_name: "My favorite temperature sensor"
+        - type: humidity
+        - type: pressure
 ```
+$${\color{red}======================================}$$
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
@@ -133,6 +140,23 @@ Each virtual device in a list have the following settings:
   _(list) (Optional) (Default value: all listed here sensor types)_\
   Types of sensors to be created. Available types:
   `temperature`, `humidity`, `pressure`, `wind_speed`, `wind_bearing`, `precipitation`, `illuminance`, `radiation`, `uv`, `pm`
+
+$${\color{red}======================================}$$
+#### Sensor configuration variables
+
+Each sensor supports the following optional attributes:
+
+**id_regexp**:\
+_(string) (Optional)_\
+  Regular expression to match ID of Narodmon sensor against. This is useful when:
+- need to show several sensors of the same type (for example, PM2.5 and PM10). So two `pm` sensors can be added to configuration.yaml and proper Narodmon sensor is selected using this regexp for each of added `pm`s
+- need to filter out some sensor(s). For example, need to exclude sensor providing incorrect temperature reading due to direct sunglight
+
+**display_name**:\
+_(string) (Optional)_\
+  Desired name of the sensor to show on HA UI. If value is not provided, default name will be created using `Narodmon <sensor type>` pattern
+
+$${\color{red}======================================}$$
 
 ## Track updates
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #  Copyright (c) 2021-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -238,7 +239,6 @@ class NarodmonApiClient(Generic[T]):
                 break
             for sensor in device["sensors"]:
                 if sensor["type"] in self._nearby_sensor_types:
-                    self._nearby_sensor_types.remove(sensor["type"])
                     sensors[sensor["id"]] = device["id"]
                     if device["id"] not in self._devices:
                         self._devices[int(device["id"])] = now_ts

@@ -13,13 +13,25 @@ logger:
 
 # https://www.home-assistant.io/integrations/debugpy/
 # If you need to debug uncomment the line below
-#debugpy:
+debugpy:
 
 narodmon:
   devices:
     - name: "Narodmon"
-#      sensors:
-#        - temperature
-#        - humidity
+      sensors:
+        - type: pm
+          id_regexp: "12345"
+          display_name: "PM2.5"
+        - type: pm
+          id_regexp: "12346"
+          display_name: "PM10"
+        - type: temperature
+        - type: humidity
+        - type: pressure
+        - type: radiation
+
+        # - temperature
+        #- humidity
+        #- pm
       scan_interval:
         seconds: 61

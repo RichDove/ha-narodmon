@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #  Copyright (c) 2021-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -40,6 +41,10 @@ ISSUE_URL: Final = "https://github.com/Limych/ha-narodmon/issues"
 # Configuration and options
 CONF_APIKEY: Final = "apikey"
 CONF_SEARCH_AREA_RADIUS: Final = "search_area_radius"
+
+CONF_SENSOR_TYPE: Final = "type"
+CONF_SENSOR_ID_REGEXP: Final = "id_regexp"
+CONF_SENSOR_DISPLAY_NAME: Final = "display_name"
 
 # Defaults
 DEFAULT_SCAN_INTERVAL: Final = timedelta(minutes=3)

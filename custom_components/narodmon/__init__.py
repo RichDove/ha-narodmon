@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #  Copyright (c) 2021-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -42,6 +43,9 @@ from .api import NARODMON_IDS, NarodmonApiClient
 from .const import (
     CONF_APIKEY,
     CONF_SEARCH_AREA_RADIUS,
+    CONF_SENSOR_DISPLAY_NAME,
+    CONF_SENSOR_ID_REGEXP,
+    CONF_SENSOR_TYPE,
     DEFAULT_SCAN_INTERVAL,
     DEFAULT_SEARCH_AREA_RADIUS,
     DEFAULT_TIMEOUT,
@@ -63,10 +67,18 @@ def cv_apikey(value: Any) -> str:
     raise vol.Invalid(msg)
 
 
+SENSOR_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_SENSOR_TYPE): vol.All(vol.In(SENSOR_TYPES)),
+        vol.Optional(CONF_SENSOR_ID_REGEXP): cv.string,
+        vol.Optional(CONF_SENSOR_DISPLAY_NAME): cv.string,
+    }
+)
+
 DEVICE_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_NAME): cv.string,
-        vol.Optional(CONF_SENSORS): vol.All(cv.ensure_list, [vol.In(SENSOR_TYPES)]),
+        vol.Optional(CONF_SENSORS): vol.All(cv.ensure_list, [SENSOR_SCHEMA]),
         vol.Optional(CONF_LATITUDE): cv.latitude,
         vol.Optional(CONF_LONGITUDE): cv.longitude,
         vol.Optional(CONF_SHOW_ON_MAP, default=False): cv.boolean,
@@ -196,8 +208,10 @@ class NarodmonDataUpdateCoordinator(DataUpdateCoordinator):
         self.latitude = config.get(CONF_LATITUDE, hass.config.latitude)
         self.longitude = config.get(CONF_LONGITUDE, hass.config.longitude)
         self.show_on_map = config.get(CONF_SHOW_ON_MAP, False)
-        self.max_distance = config.get(CONF_SEARCH_AREA_RADIUS)
-        self.types = config.get(CONF_SENSORS, SENSOR_TYPES.keys())
+        self.max_distance = config.get(CONF_SEARCH_AREA_RADIUS, float(0))
+        self.sensor_conf = config.get(
+            CONF_SENSORS, [{CONF_SENSOR_TYPE: t} for t in SENSOR_TYPES]
+        )
         self.devices: NARODMON_IDS = set()
         self.sensors: NARODMON_IDS = set()
 
@@ -214,11 +228,13 @@ class NarodmonDataUpdateCoordinator(DataUpdateCoordinator):
             if data is None:
                 raise UpdateFailed
 
-            tps: NARODMON_IDS = {SENSOR_TYPES[i].get(ATTR_ID) for i in self.types}
+            tps: NARODMON_IDS = {
+                SENSOR_TYPES[i[CONF_SENSOR_TYPE]].get(ATTR_ID) for i in self.sensor_conf
+            }
             for sensor in data.values():
                 if sensor["id"] in self.sensors and sensor["time"] >= fresh:
                     sensors.append(sensor)
-                    tps.remove(sensor["type"])
+                    tps.discard(sensor["type"])
 
             if tps:
 
